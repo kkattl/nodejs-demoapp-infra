@@ -13,12 +13,11 @@ override.tf
 override.tf.json
 *_override.tf
 
-# Variable definitions (якщо вони містять реальні секрети)
+# Variable definitions
 *.auto.tfvars
 *.tfvars
-# але зберегти приклади
 !*.tfvars.example
 
-# CLI credentials (якщо випадково потраплять у проект)
+# CLI credentials
 .aws/
 
