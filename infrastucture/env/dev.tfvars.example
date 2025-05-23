@@ -1,0 +1,19 @@
+project_name      = "demoapp"
+environment       = "dev"
+
+# compute
+instance_type     = "t3.micro"
+min_capacity      = 1
+max_capacity      = 2
+desired_capacity  = 1
+
+# networking
+vpc_cidr          = "10.20.0.0/16"
+public_cidrs      = ["10.20.1.0/24", "10.20.2.0/24"]
+private_cidrs     = ["10.20.11.0/24", "10.20.12.0/24"]
+
+# alerts (optional)
+alert_email       = "add_here_your_email"
+
+aws_profile = "demo-task"
+~                                    
