@@ -7,6 +7,7 @@
 
 # Terraform local directories
 .terraform/
+!.terraform.lock.hcl
 
 # Terraform override files
 override.tf
@@ -21,3 +22,10 @@ override.tf.json
 # CLI credentials
 .aws/
 
+user_data/*copy*.sh
+
+# VSCode
+.vscode/
+.idea/
+
+artillery/report-*.json

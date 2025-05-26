@@ -44,6 +44,17 @@ data "aws_iam_policy_document" "ec2_trust" {
   }
 }
 
+data "aws_iam_policy_document" "docdb_access" {
+  statement {
+    actions = [
+      "rds-db:connect",
+      "docdb:Describe*",
+      "secretsmanager:GetSecretValue"
+    ]
+    resources = ["*"]
+  }
+}
+
 resource "aws_iam_role_policy_attachment" "ssm" {
   role       = aws_iam_role.ec2_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
@@ -54,8 +65,16 @@ resource "aws_iam_instance_profile" "ec2_profile" {
   role = aws_iam_role.ec2_role.name
 }
 
+resource "aws_iam_role_policy" "docdb_access" {
+  role   = aws_iam_role.ec2_role.id
+  policy = data.aws_iam_policy_document.docdb_access.json
+}
 
 # Launch Template for nodes 
+
+data "aws_secretsmanager_secret_version" "docdb_pwd" {
+  secret_id = aws_secretsmanager_secret.docdb_pwd.id
+} 
 
 data "aws_ami" "amzn2" {
   owners      = ["amazon"]
@@ -72,7 +91,11 @@ resource "aws_launch_template" "app" {
   instance_type = var.instance_type
   key_name      = var.key_name
 
-  user_data = base64encode(file("../../user_data/user_data.sh"))
+  user_data = base64encode(
+  templatefile("../../user_data/user_data.sh", {
+    docdb_endpoint = aws_docdb_cluster.main.endpoint
+  })
+)
 
   iam_instance_profile {
     name = aws_iam_instance_profile.ec2_profile.name
@@ -125,4 +148,11 @@ module "asg" {
       }
     }
   }
+}
+
+data "aws_caller_identity" "current" {}
+
+resource "aws_inspector2_enabler" "default" {
+  account_ids    = [data.aws_caller_identity.current.account_id]
+  resource_types = ["EC2"]
 }

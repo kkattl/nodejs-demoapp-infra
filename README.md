@@ -2,20 +2,25 @@
 
 This repository contains Terraform configurations, user data scripts, and load testing setup to deploy the **Node.js DemoApp** (https://github.com/benc-uk/nodejs-demoapp) on AWS using:
 
-- **VPC** (public & private subnets, route tables, igw) via terraform-aws-modules/vpc
-- **Application Load Balancer** (ALB) with Target Group (port 3000)
-- **EC2 Auto Scaling Group** (ASG) running Docker containers via a Launch Template
-- **CloudWatch** alarm and **SNS** notifications for scaling events
-- **Artillery** load test scenario
+-- **VPC** (public & private subnets, route tables, igw) via terraform-aws-modules/vpc  
+- **Application Load Balancer** (ALB) with Target Group (port 3000)  
+- **EC2 Auto Scaling Group** (ASG) running Docker containers via a Launch Template  
+- **Amazon DocumentDB** cluster (with subnet group and Secrets Manager for credentials)  
+- **AWS Security Groups** to lock down ALB, EC2 and DocumentDB traffic  
+- **IAM Roles & Policies** (EC2 instance profile + custom policy allowing SSM, SecretsManager, RDS-DB connect & DocDB Describe permissions)  
+- **CloudWatch** alarm and **SNS** notifications for scaling & high-traffic events  
+- **AWS Inspector** automatic security assessments on EC2 instances  
+- **Locust** load test scenario
 
 ---
 
 ## ⚙️ Prerequisites
 
-- **Terraform >= 1.5**
-- **AWS CLI** configured (profile or env vars)
+- **Terraform >= 1.5**  
+- **AWS CLI** configured (profile or env vars)  
 - **AWS IAM** user with permissions for:
-  - VPC, EC2, ELB, AutoScaling, IAM(role/profile), CloudWatch, SNS
+  - VPC, EC2, ELB, AutoScaling, IAM (role/profile), CloudWatch, SNS  
+  - SecretsManager, DocumentDB (rds:CreateDBSubnetGroup, docdb:Describe*, rds-db:connect), Inspector2  
 - Internet access (for NAT Gateway) in private subnets or VPC endpoints for SSM
 
 ---
